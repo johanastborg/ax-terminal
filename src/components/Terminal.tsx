@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 
 type TerminalProps = {
   logs: string[];
-  onCollapse: () => void;
+  onCommand: (cmd: string) => void;
 };
 
-export const Terminal: React.FC<TerminalProps> = ({ logs, onCollapse }) => {
+export const Terminal: React.FC<TerminalProps> = ({ logs, onCommand }) => {
   const [input, setInput] = useState('');
   const [localLogs, setLocalLogs] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -23,22 +23,15 @@ export const Terminal: React.FC<TerminalProps> = ({ logs, onCollapse }) => {
     const cmd = input.trim();
     if (!cmd) return;
 
-    if (cmd === 'ax collapse') {
-      onCollapse();
-    } else if (cmd === 'help') {
-        // We can't easily push to the parent's log stream if it's strictly from the hook,
-        // but we can assume the parent might accept a log, or we just handle it via the hook.
-        // For simplicity, this terminal is "read-only" regarding the system logs except for the collapse trigger.
-    }
-
+    onCommand(cmd);
     setInput('');
   };
 
   return (
     <div className="flex flex-col h-full w-full border border-[var(--foreground)] bg-black/90 p-4 font-mono text-xs md:text-sm shadow-[0_0_15px_rgba(0,255,65,0.1)]">
-        <div className="mb-2 border-b border-[var(--foreground)]/30 pb-1 text-[var(--crt-blue)] uppercase tracking-wider text-xs">
-            /var/log/syslog
-        </div>
+      <div className="mb-2 border-b border-[var(--foreground)]/30 pb-1 text-[var(--crt-blue)] uppercase tracking-wider text-xs">
+        /var/log/syslog
+      </div>
       <div className="flex-1 overflow-y-auto space-y-1 pr-2">
         {logs.map((log, i) => (
           <div key={i} className="text-[var(--foreground)] opacity-90 break-words font-mono">
